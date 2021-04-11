@@ -1,7 +1,5 @@
 # Transaction.py
-from Signatures import sign
-from Signatures import verify
-from Signatures import generate_keys
+from Signatures import generate_keys, sign, verify
 
 
 class transactions:
@@ -21,10 +19,12 @@ class transactions:
 
     # stores all the input transaction details (sender address and amount of transaction by sender) on a list
     def add_input(self, from_addr, amount):
+        print(f"Input Transaction Amount:{amount}")
         self.inputs.append((from_addr, amount))
 
     # stores all the output transaction details (receiver address and amount of transaction by receiver) on a list
     def add_output(self, to_addr, amount):
+        print(f"Output Transaction Amount: {amount}")
         self.outputs.append((to_addr, amount))
 
     # stores the address of the thrid party who verfies the transation between the sender and the receiver
@@ -38,6 +38,7 @@ class transactions:
         message = self.__gather()
         # print(f"Message: {message}")
         newsig = sign(message, private)
+        print(f"Signature Generated: {newsig}")
         self.signs.append(newsig)
 
     # Validates whether the signature generated from the transaction details and private key of sender
@@ -47,21 +48,19 @@ class transactions:
     # Receiver cannot recieve more than sent by the sender
     # sender is only able to carry transactions above 0
     # Good signature must be obtained
+
     def is_valid(self):
         total_in = 0
         total_out = 0
         message = self.__gather()
-
         for addr, amount in self.inputs:
             found = False
             for s in self.signs:
                 if verify(message, s, addr):
                     found = True
             if not found:
-                print("Signature Validation Failed")
                 return False
             if amount < 0:
-                print("Transaction amount less than 0.")
                 return False
             total_in = total_in + amount
         for addr in self.escrow:
@@ -69,7 +68,6 @@ class transactions:
             for s in self.signs:
                 if verify(message, s, addr):
                     found = True
-                print("Escrow Transaction not Signed")
             if not found:
                 return False
         for addr, amount in self.outputs:
@@ -78,18 +76,19 @@ class transactions:
             total_out = total_out + amount
 
         if total_out > total_in:
-            print("Outputs exceed inputs")
             return False
 
         return True
 
-    # Used to gather the transaction details in the form of message
     def __gather(self):
         data = []
         data.append(self.inputs)
         data.append(self.outputs)
         data.append(self.escrow)
         return data
+
+    def __repr__(self):
+        return "Returing Transactions"
 
 
 if __name__ == "__main__":
@@ -177,22 +176,22 @@ if __name__ == "__main__":
         print("ERROR! transactions is invalid")
 
     # Escrow transactions not signed by the arbiter
-    #print()
-    #print("---------Transaction 5---------")
-    #print("Sender = C")
-    #print("Receiver = A")
-    #print("Sending = A3")
-    #print("Receiving = B2")
-    #transactions5 = transactions()
-    #transactions5.add_input(pu3, 1.2)
-    #transactions5.add_output(pu1, 1.1)
-    #transactions5.add_escrow(pu4)
-    #transactions5.sign(pr3)
+    print()
+    print("---------Transaction 5---------")
+    print("Sender = C")
+    print("Receiver = A")
+    print("Sending = A3")
+    print("Receiving = B2")
+    transactions5 = transactions()
+    transactions5.add_input(pu3, 1.2)
+    transactions5.add_output(pu1, 1.1)
+    transactions5.add_escrow(pu4)
+    transactions5.sign(pr3)
 
-    #if transactions5.is_valid():
-        #print("Success! transactions is valid")
-    #else:
-        #print("ERROR! transactions is invalid")
+    if transactions5.is_valid():
+        print("Success! transactions is valid")
+    else:
+        print("ERROR! transactions is invalid")
 
     # Two input addrs, signed by one
     print()
