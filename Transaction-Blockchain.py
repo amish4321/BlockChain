@@ -77,7 +77,7 @@ class BTransac(BlockChain):
 
     # Generating different nonces until they are valid with required amount of leading zeros
     def search_nonce(self):
-        for _ in range(1000):
+        for _ in range(100000):
             self.nonce = "".join(
                 [chr(random.randint(0, 255)) for i in range(10 * nonce_zeros)]
             )
@@ -93,6 +93,8 @@ if __name__ == "__main__":
     pr2, pu2 = generate_keys()
     pr3, pu3 = generate_keys()
     pr4, pu4 = generate_keys()
+    pr5, pu5 = generate_keys()
+    pr6, pu6 = generate_keys()
 
     # Adding the First Transaction
     print("TRANSACTION 1 Created")
@@ -104,6 +106,8 @@ if __name__ == "__main__":
     # Checking if the Transaction is valid or not
     if Tx1.is_valid():
         print("This is a Valid Transaction.")
+    else:
+        print("This Transaction is not valid.")
 
     # Saving the first transaction into pickle dat file
     savefile = open("transaction.dat", "wb")
@@ -134,7 +138,13 @@ if __name__ == "__main__":
     Tx2 = transactions()
     Tx2.add_input(pu2, 1.1)
     Tx2.add_output(pu3, 1)
-    Tx2.sign(pr2)
+    Tx2.sign(pr3)
+
+     # Checking if the Transaction is valid or not
+    if Tx2.is_valid():
+        print("This is a Valid Transaction.")
+    else:
+        print("This Transaction is not valid.")
 
     # Adding the second transaction to the root block
     print("TRANSACTION 2 added to Genesis Block.")
@@ -148,8 +158,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     # Creating second block
-    print("Block 1 Created.")
-    B1 = BTransac(root)
+    print("Block A Created.")
+    B_A = BTransac(root)
     print("TRANSACTION 3 Created.")
     
     # Creating third transaction
@@ -157,50 +167,109 @@ if __name__ == "__main__":
     Tx3.add_input(pu3, 1.1)
     Tx3.add_output(pu1, 1)
     Tx3.sign(pr3)
-
-    print("TRANSACTION 3 added to Block 1.")
-
+      # Checking if the Transaction is valid or not
+    if Tx3.is_valid():
+        print("This is a Valid Transaction.")
+    else:
+        print("This Transaction is not valid.")
+    print("TRANSACTION 4 Created.")
     Tx4 = transactions()
-    Tx4.add_input(pu4, 100)
+    Tx4.add_input(pu4, 50)
     Tx4.add_output(pu4, 99)
     Tx4.sign(pr4)
+      # Checking if the Transaction is valid or not
+    if Tx4.is_valid():
+        print("This is a Valid Transaction.")
+    else:
+        print("This Transaction is not valid.")
 
 
     # Adding the third transaction onto the First Block
-    B1.add_trans(Tx3)
-    B1.add_trans(Tx4)
-
+    B_A.add_trans(Tx3)
+    print("TRANSACTION 3 added to Block A.")
+    B_A.add_trans(Tx4)
+    print("TRANSACTION 4 added to Block A.")
 
     # Calculating the time period for searching the nonce with required leading zeros
     start = time.time()
-    B1.search_nonce()
+    B_A.search_nonce()
     end = time.time()
 
     print(f"Time taken to calculate Nonce: {end-start}s")
 
     # Checking if the nonce generated are valid or not
-    if B1.valid_nonce():
-        print("B1 is a Valid Nonce.")
+    if B_A.valid_nonce():
+        print("Block A has a Valid Nonce.")
     else:
-        print("Nonce was not found for B1.")
+        print("Nonce was not found for Block A.")
 
-    if B1.is_valid():
-        print("The block has valid transactions")
+    
+    if B_A.is_valid():
+        print("The block A has valid transactions")
     else:
-        print("Invalid Transactions on the block.")
+        print("Invalid Transactions on the block A.")
 
     # Saving the first block into a blockchain.dat file
     savefile = open("blockchain.dat", "wb")
-    pickle.dump(B1, savefile)
+    pickle.dump(B_A, savefile)
     savefile.close()
-
-    # Loading the saved block using Pickle
+ # Loading the saved block using Pickle
     loadfile = open("blockchain.dat", "rb")
-    load_B1 = pickle.load(loadfile)
-
-
-    # Checking if the loaded block has valid nonce or not 
-    if load_B1.valid_nonce():
+    load_B_A = pickle.load(loadfile)
+  # Checking if the loaded block has valid nonce or not 
+    if load_B_A.valid_nonce():
         print("Nonce is valid after saving and loading pickle.")
     else:
         print("Loaded Nonce is Invalid.")
+   
+    # Creating Third block
+    print("Block B Created.")
+    B_B = BTransac(B_A)
+    print("TRANSACTION 4 Created.")
+    
+    # Creating transaction 5
+    Tx5 = transactions()
+    Tx5.add_input(pu6, 45)
+    Tx5.add_output(pu5, 50)
+    Tx5.sign(pr6)
+      # Checking if the Transaction is valid or not
+    if Tx5.is_valid():
+        print("This is a Valid Transaction.")
+    else:
+        print("This Transaction is not valid.")
+    print("TRANSACTION 6 Created.")
+    Tx6 = transactions()
+    Tx6.add_input(pu5, 1000)
+    Tx6.add_output(pu6, 999)
+    Tx6.sign(pr6)
+      # Checking if the Transaction is valid or not
+    if Tx6.is_valid():
+        print("This is a Valid Transaction.")
+    else:
+        print("This Transaction is not valid.")
+
+
+    # Adding the third transaction onto the First Block
+    B_B.add_trans(Tx5)
+    print("TRANSACTION 5 added to Block B.")
+    B_A.add_trans(Tx6)
+    print("TRANSACTION 6 added to Block B.")
+
+    # Calculating the time period for searching the nonce with required leading zeros
+    start = time.time()
+    B_B.search_nonce()
+    end = time.time()
+
+    print(f"Time taken to calculate Nonce: {end-start}s")
+
+    # Checking if the nonce generated are valid or not
+    if B_B.valid_nonce():
+        print("Block B is a Valid Nonce.")
+    else:
+        print("Nonce was not found for Block B.")
+
+    
+    if B_B.is_valid():
+        print("The block B has valid transactions")
+    else:
+        print("Invalid Transactions on the block B.")

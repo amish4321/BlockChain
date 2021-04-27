@@ -118,16 +118,17 @@ if __name__ == "__main__":
 
     print()
     print("---------Transaction 2---------")
-    print("Sender = A")
-    print("Receiver = B, C")
-    print("Sending = A2")
-    print("Receiving = B1, C1")
+    print("Sender = A,B")
+    print("Receiver = C")
+    print("Sending = A=2,B=2")
+    print("Receiving = C=4")
 
     transactions2 = transactions()
     transactions2.add_input(pu1, 2)
-    transactions2.add_output(pu2, 1)
-    transactions2.add_output(pu3, 1)
+    transactions2.add_input(pu2, 2)
+    transactions2.add_output(pu3, 4)
     transactions2.sign(pr1)
+    transactions2.sign(pr2)
 
     if transactions2.is_valid():
         print("Success! transactions is valid")
